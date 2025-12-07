@@ -34,7 +34,7 @@ export const mockLessons = {
       id: 1,
       courseId: 1,
       title: "স্বরবর্ণ - Vowels (অ, আ, ই, ঈ)",
-      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      videoUrl: "https://www.youtube.com/embed/bUtVkW7pAcs",
       content: `# স্বরবর্ণ (Vowels)
 
 বাংলা ভাষায় ১১টি স্বরবর্ণ আছে:
@@ -54,7 +54,7 @@ export const mockLessons = {
       id: 2,
       courseId: 1,
       title: "স্বরবর্ণ - Vowels (উ, ঊ, ঋ)",
-      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      videoUrl: "https://www.youtube.com/embed/bUtVkW7pAcs",
       content: `# স্বরবর্ণ (Vowels) - Part 2
 
 **উ (U)** - শব্দের উদাহরণ: উট, উনিশ
@@ -70,7 +70,7 @@ export const mockLessons = {
       id: 3,
       courseId: 1,
       title: "ব্যঞ্জনবর্ণ - Consonants (ক-বর্গ)",
-      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      videoUrl: "https://www.youtube.com/embed/bUtVkW7pAcs",
       content: `# ব্যঞ্জনবর্ণ - Consonants
 
 বাংলা ভাষায় ৩৯টি ব্যঞ্জনবর্ণ আছে।
@@ -89,7 +89,7 @@ export const mockLessons = {
       id: 4,
       courseId: 1,
       title: "ব্যঞ্জনবর্ণ - Consonants (চ-বর্গ, ট-বর্গ)",
-      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      videoUrl: "https://www.youtube.com/embed/bUtVkW7pAcs",
       content: `# ব্যঞ্জনবর্ণ - Part 2
 
 ## চ-বর্গ (Cha Series):
@@ -110,7 +110,7 @@ export const mockLessons = {
       id: 5,
       courseId: 1,
       title: "যুক্তাক্ষর - Compound Letters",
-      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      videoUrl: "https://www.youtube.com/embed/bUtVkW7pAcs",
       content: `# যুক্তাক্ষর (Compound Letters)
 
 দুই বা ততোধিক ব্যঞ্জনবর্ণ মিলে যুক্তাক্ষর তৈরি হয়।
@@ -136,7 +136,7 @@ export const mockLessons = {
       id: 6,
       courseId: 2,
       title: "অভিবাদন - Greetings",
-      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      videoUrl: "https://www.youtube.com/embed/bUtVkW7pAcs",
       content: `# অভিবাদন (Greetings)
 
 ## সাধারণ অভিবাদন:
@@ -161,7 +161,7 @@ export const mockLessons = {
       id: 7,
       courseId: 2,
       title: "পরিচয় - Introduction",
-      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      videoUrl: "https://www.youtube.com/embed/bUtVkW7pAcs",
       content: `# পরিচয় (Introduction)
 
 ## নিজের পরিচয় দেওয়া:
@@ -190,7 +190,7 @@ export const mockLessons = {
       id: 8,
       courseId: 2,
       title: "সংখ্যা - Numbers",
-      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      videoUrl: "https://www.youtube.com/embed/bUtVkW7pAcs",
       content: `# সংখ্যা (Numbers)
 
 ## ১-১০:
@@ -219,7 +219,7 @@ export const mockLessons = {
       id: 9,
       courseId: 2,
       title: "দৈনন্দিন বাক্য - Daily Phrases",
-      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      videoUrl: "https://www.youtube.com/embed/bUtVkW7pAcs",
       content: `# দৈনন্দিন বাক্য (Daily Phrases)
 
 ## সাধারণ বাক্য:
@@ -248,7 +248,7 @@ export const mockLessons = {
       id: 10,
       courseId: 2,
       title: "খাবারের অর্ডার - Ordering Food",
-      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      videoUrl: "https://www.youtube.com/embed/bUtVkW7pAcs",
       content: `# খাবারের অর্ডার (Ordering Food)
 
 ## রেস্তোরাঁয় কথোপকথন:
@@ -282,7 +282,7 @@ export const mockLessons = {
       id: 11,
       courseId: 3,
       title: "বিশেষ্য - Nouns",
-      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      videoUrl: "https://www.youtube.com/embed/bUtVkW7pAcs",
       content: `# বিশেষ্য (Nouns)
 
 বিশেষ্য হলো যা কিছু নাম বোঝায় - ব্যক্তি, স্থান, বস্তু বা ভাব।
@@ -312,7 +312,7 @@ export const mockLessons = {
       id: 12,
       courseId: 3,
       title: "সর্বনাম - Pronouns",
-      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      videoUrl: "https://www.youtube.com/embed/bUtVkW7pAcs",
       content: `# সর্বনাম (Pronouns)
 
 বিশেষ্যের পরিবর্তে ব্যবহৃত শব্দকে সর্বনাম বলে।
@@ -348,7 +348,7 @@ export const mockLessons = {
       id: 13,
       courseId: 3,
       title: "ক্রিয়া - Verbs",
-      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      videoUrl: "https://www.youtube.com/embed/bUtVkW7pAcs",
       content: `# ক্রিয়া (Verbs)
 
 যে শব্দ দ্বারা কোনো কাজ করা বোঝায় তাকে ক্রিয়া বলে।
@@ -386,7 +386,7 @@ export const mockLessons = {
       id: 14,
       courseId: 3,
       title: "বিশেষণ - Adjectives",
-      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      videoUrl: "https://www.youtube.com/embed/bUtVkW7pAcs",
       content: `# বিশেষণ (Adjectives)
 
 যে শব্দ বিশেষ্য বা সর্বনামের দোষ, গুণ, অবস্থা, সংখ্যা ইত্যাদি প্রকাশ করে তাকে বিশেষণ বলে।
@@ -421,7 +421,7 @@ export const mockLessons = {
       id: 15,
       courseId: 3,
       title: "বাক্য গঠন - Sentence Structure",
-      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      videoUrl: "https://www.youtube.com/embed/bUtVkW7pAcs",
       content: `# বাক্য গঠন (Sentence Structure)
 
 বাংলা বাক্যের সাধারণ গঠন: **কর্তা + কর্ম + ক্রিয়া**

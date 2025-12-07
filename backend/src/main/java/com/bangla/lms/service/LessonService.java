@@ -22,7 +22,7 @@ public class LessonService {
 
     @Transactional(readOnly = true)
     public List<LessonDTO> getLessonsByCourseId(Long courseId) {
-        return lessonRepository.findByCourseIdOrderByLessonOrderAsc(courseId).stream()
+        return lessonRepository.findByCourseIdOrderByOrderIndexAsc(courseId).stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
@@ -48,9 +48,9 @@ public class LessonService {
         return lessonRepository.findById(id)
                 .map(lesson -> {
                     lesson.setTitle(lessonDetails.getTitle());
-                    lesson.setVideoUrl(lessonDetails.getVideoUrl());
+                    lesson.setVideoId(lessonDetails.getVideoId());
                     lesson.setContent(lessonDetails.getContent());
-                    lesson.setLessonOrder(lessonDetails.getLessonOrder());
+                    lesson.setOrderIndex(lessonDetails.getOrderIndex());
                     Lesson updated = lessonRepository.save(lesson);
                     return convertToDTO(updated);
                 });
@@ -67,13 +67,13 @@ public class LessonService {
     }
 
     private LessonDTO convertToDTO(Lesson lesson) {
-        LessonDTO dto = new LessonDTO();
-        dto.setId(lesson.getId());
-        dto.setCourseId(lesson.getCourse().getId());
-        dto.setTitle(lesson.getTitle());
-        dto.setVideoUrl(lesson.getVideoUrl());
-        dto.setContent(lesson.getContent());
-        dto.setLessonOrder(lesson.getLessonOrder());
-        return dto;
+        return LessonDTO.builder()
+                .id(lesson.getId())
+                .courseId(lesson.getCourse().getId())
+                .title(lesson.getTitle())
+                .videoId(lesson.getVideoId())
+                .content(lesson.getContent())
+                .orderIndex(lesson.getOrderIndex())
+                .build();
     }
 }

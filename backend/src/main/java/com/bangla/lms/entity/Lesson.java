@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "lessons")
 @Data
@@ -25,12 +27,29 @@ public class Lesson {
     @Column(nullable = false, length = 500)
     private String title;
 
-    @Column(name = "video_url", length = 1000)
-    private String videoUrl;
+    @Column(name = "video_id", nullable = false, length = 50)
+    private String videoId;
 
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    @Column(name = "lesson_order")
-    private Integer lessonOrder;
+    @Column(name = "order_index", nullable = false)
+    private Integer orderIndex;
+
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @Column(nullable = false)
+    private LocalDateTime updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 }
