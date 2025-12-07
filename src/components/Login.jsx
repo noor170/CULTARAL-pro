@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Eye, EyeOff, Lock, Mail, GraduationCap } from 'lucide-react';
 
-export default function Login({ onLoginSuccess }) {
+export default function Login({ onLoginSuccess, onShowRegister }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -194,7 +194,10 @@ export default function Login({ onLoginSuccess }) {
 
         <div className="mt-6 text-center text-sm text-gray-600">
           <p>New to Bangla Learning?</p>
-          <button className="text-teal-600 hover:text-teal-700 font-semibold mt-1">
+          <button
+            onClick={onShowRegister}
+            className="text-teal-600 hover:text-teal-700 font-semibold mt-1"
+          >
             Create an account
           </button>
         </div>
