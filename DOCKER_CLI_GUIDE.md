@@ -235,7 +235,7 @@ Step 1: Build React
 └─ Output: frontend/dist/ ✓
 
 Step 2: Build Spring Boot
-├─ FROM eclipse-temurin:17.0.11-jdk-alpine
+├─ FROM eclipse-temurin:17-jdk
 ├─ Install Maven
 ├─ COPY backend/pom.xml
 ├─ COPY backend/src/
@@ -245,12 +245,12 @@ Step 2: Build Spring Boot
 └─ Output: backend/target/bangla-learning-lms-1.0.0.jar ✓
 
 Step 3: Runtime
-├─ FROM eclipse-temurin:17.0.11-jre-alpine
+├─ FROM eclipse-temurin:17-jre
 ├─ COPY app.jar (from builder)
 ├─ EXPOSE 8080
 └─ RUN java -jar app.jar ✓
 
-Final Image: ~300MB ✓
+Final Image: ~500MB ✓
 ```
 
 ---

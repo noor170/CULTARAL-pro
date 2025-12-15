@@ -49,7 +49,7 @@ RUN test -d dist || (echo "Frontend build failed!" && exit 1)
 # STAGE 2: BUILD SPRING BOOT BACKEND
 # ============================================
 # Builds Maven project with Java 17 JDK
-FROM eclipse-temurin:17.0.11-jdk-alpine AS backend-builder
+FROM eclipse-temurin:17-jdk AS backend-builder
 
 # Set working directory
 WORKDIR /app/backend
@@ -82,8 +82,8 @@ RUN test -f target/bangla-learning-lms-1.0.0.jar || (echo "Backend build failed!
 # STAGE 3: RUNTIME IMAGE (FINAL)
 # ============================================
 # Minimal Java 17 JRE for running the application
-# Uses Alpine Linux for small image size (~300MB total)
-FROM eclipse-temurin:17.0.11-jre-alpine
+# Uses slim image for smaller size
+FROM eclipse-temurin:17-jre
 
 # Set working directory in runtime image
 WORKDIR /app
