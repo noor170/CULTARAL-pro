@@ -27,7 +27,7 @@ public class Lesson {
     @Column(nullable = false, length = 500)
     private String title;
 
-    @Column(name = "video_id", nullable = false, length = 50)
+    @Column(name = "video_id", nullable = true, length = 50)
     private String videoId;
 
     @Column(columnDefinition = "TEXT")
@@ -35,6 +35,24 @@ public class Lesson {
 
     @Column(name = "order_index", nullable = false)
     private Integer orderIndex;
+
+    // Compatibility methods for legacy field names used elsewhere (e.g. DataInitializer)
+    // These delegate to the actual fields (videoId <-> videoUrl, orderIndex <-> lessonOrder)
+    public void setVideoUrl(String videoUrl) {
+        this.videoId = videoUrl;
+    }
+
+    public String getVideoUrl() {
+        return this.videoId;
+    }
+
+    public void setLessonOrder(Integer lessonOrder) {
+        this.orderIndex = lessonOrder;
+    }
+
+    public Integer getLessonOrder() {
+        return this.orderIndex;
+    }
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
