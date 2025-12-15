@@ -46,17 +46,19 @@ public class DataInitializer implements CommandLineRunner {
         Lesson lesson1 = new Lesson();
         lesson1.setCourse(course1);
         lesson1.setTitle("স্বরবর্ণ - Vowels (অ, আ, ই, ঈ)");
-        // lesson1.setVideoUrl("https://www.youtube.com/embed/dQw4w9WgXcQ");
+          lesson2.setVideoUrl("https://www.youtube.com/embed/dQw4w9WgXcQ");
+        // lesson1.setVideoUrl("bUtVkW7pAcs");
         lesson1.setContent("বাংলা ভাষায় ১১টি স্বরবর্ণ আছে: অ, আ, ই, ঈ, উ, ঊ, ঋ, এ, ঐ, ও, ঔ");
-        // lesson1.setLessonOrder(1);
+        lesson1.setLessonOrder(1);
         lessonRepository.save(lesson1);
 
         Lesson lesson2 = new Lesson();
         lesson2.setCourse(course1);
         lesson2.setTitle("ব্যঞ্জনবর্ণ - Consonants (ক-বর্গ)");
-        // lesson2.setVideoUrl("https://www.youtube.com/embed/dQw4w9WgXcQ");
+        lesson1.setVideoUrl("https://www.youtube.com/embed/dQw4w9WgXcQ");
+        // lesson2.setVideoUrl("bUtVkW7pAcs");
         lesson2.setContent("বাংলা ভাষায় ৩৯টি ব্যঞ্জনবর্ণ আছে। ক-বর্গ: ক, খ, গ, ঘ, ঙ");
-        // lesson2.setLessonOrder(2);
+        lesson2.setLessonOrder(2);
         lessonRepository.save(lesson2);
     }
 }
