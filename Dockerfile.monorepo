@@ -1,0 +1,245 @@
+# ============================================
+# MULTI-STAGE DOCKERFILE FOR FULL-STACK APP
+# ============================================
+# Builds React frontend + Spring Boot backend in a single Docker image
+# Structure:
+#   - Stage 1: Build React (Node.js)
+#   - Stage 2: Build Spring Boot (Maven + Java 17)
+#   - Stage 3: Runtime (Java 17 JRE only)
+#
+# Benefits:
+#   ✓ Single image for entire stack
+#   ✓ React served from Spring Boot /static
+#   ✓ Minimal final image size
+#   ✓ No Nginx needed
+#   ✓ All layers cached effectively
+#
+# Build: docker build -f Dockerfile.monorepo -t bangla-lms:latest .
+# Run:   docker run -p 8080:8080 bangla-lms:latest
+
+# ============================================
+# STAGE 1: BUILD REACT FRONTEND
+# ============================================
+# Builds React app with Vite and outputs to dist/
+FROM node:20.12-alpine AS frontend-builder
+
+# Set working directory
+WORKDIR /app/frontend
+
+# Copy frontend package files
+# This layer caches if dependencies haven't changed
+COPY frontend/package*.json ./
+
+# Install dependencies
+# Using npm ci for reproducible installs in CI/CD
+RUN npm ci --prefer-offline --no-audit
+
+# Copy frontend source code
+COPY frontend/ .
+
+# Build React app for production
+# Output: dist/ folder with optimized static assets
+RUN npm run build
+
+# Verify build succeeded
+RUN test -d dist || (echo "Frontend build failed!" && exit 1)
+
+
+# ============================================
+# STAGE 2: BUILD SPRING BOOT BACKEND
+# ============================================
+# Builds Maven project with Java 17 JDK
+FROM eclipse-temurin:17.0.11-jdk-alpine AS backend-builder
+
+# Set working directory
+WORKDIR /app/backend
+
+# Install Maven (not included in JDK image)
+RUN apk add --no-cache maven
+
+# Copy Maven configuration and pom.xml
+COPY backend/pom.xml .
+
+# Copy source code
+COPY backend/src ./src
+
+# Copy React build output from previous stage
+# into backend/src/main/resources/static/
+# This makes React accessible via Spring Boot
+COPY --from=frontend-builder /app/frontend/dist ./src/main/resources/static
+
+# Build Maven project with Spring Boot
+# -DskipTests: Skip tests to speed up build (optional)
+# -q: Quiet mode for cleaner output
+# Output: target/bangla-learning-lms-1.0.0.jar
+RUN mvn clean package -DskipTests -q
+
+# Verify build succeeded and JAR exists
+RUN test -f target/bangla-learning-lms-1.0.0.jar || (echo "Backend build failed!" && exit 1)
+
+
+# ============================================
+# STAGE 3: RUNTIME IMAGE (FINAL)
+# ============================================
+# Minimal Java 17 JRE for running the application
+# Uses Alpine Linux for small image size (~300MB total)
+FROM eclipse-temurin:17.0.11-jre-alpine
+
+# Set working directory in runtime image
+WORKDIR /app
+
+# Copy only the built JAR from backend-builder stage
+# This keeps final image small (no build tools, source code, or dependencies)
+COPY --from=backend-builder /app/backend/target/bangla-learning-lms-1.0.0.jar app.jar
+
+# Create directory for database files (if needed)
+RUN mkdir -p /data && chmod 777 /data
+
+# Expose Spring Boot default port
+EXPOSE 8080
+
+# Health check
+# Tests if backend API is responding
+# interval: Check every 30 seconds
+# timeout: Wait max 10 seconds for response
+# retries: Fail after 3 failed checks
+# start_period: Wait 40 seconds before first check (app startup time)
+HEALTHCHECK --interval=30s --timeout=10s --retries=3 --start-period=40s \
+    CMD wget --quiet --tries=1 --spider http://localhost:8080/api/courses || exit 1
+
+# Set Java options for containerized environment
+# -Djava.security.egd: Use /dev/urandom instead of /dev/random (faster)
+# -Xmx512m: Limit heap to 512MB (adjust based on container memory)
+ENV JAVA_OPTS="-Djava.security.egd=file:/dev/./urandom -Xmx512m"
+
+# Run Spring Boot application
+# Entrypoint allows passing additional arguments: docker run IMAGE --server.port=9000
+ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar app.jar $0 $@", "--"]
+
+
+# ============================================
+# BUILD INFORMATION
+# ============================================
+# 
+# This Dockerfile implements best practices:
+#
+# 1. MULTI-STAGE BUILD
+#    - Stage 1 builds React, discards node_modules
+#    - Stage 2 builds Maven, discards Maven cache and source code
+#    - Stage 3 runs only the JAR, no build tools
+#    Result: Final image is ~300MB instead of 2GB+
+#
+# 2. LAYER CACHING
+#    - package*.json copied separately (cached if unchanged)
+#    - pom.xml copied separately (cached if unchanged)
+#    - Source code copied after dependencies (changes often)
+#    - Benefits: Fast rebuilds when source changes
+#
+# 3. SECURITY
+#    - No build tools in runtime image
+#    - Minimal attack surface (Alpine Linux)
+#    - Health checks for automatic container restart
+#    - Non-root user recommended (add: RUN addgroup -S app && adduser -S app -G app)
+#
+# 4. PERFORMANCE
+#    - npm ci instead of npm install (reproducible)
+#    - Maven quiet mode (-q) for cleaner logs
+#    - Alpine Linux for small base image
+#    - Java security entropy optimization
+#
+# 5. LAYOUT
+#    - React built into /static/ (served as static assets)
+#    - Spring Boot serves both API and static files
+#    - No separate Nginx container needed
+#    - Simpler deployment and scaling
+#
+# ============================================
+# USAGE EXAMPLES
+# ============================================
+#
+# Build image:
+#   docker build -f Dockerfile.monorepo -t bangla-lms:latest .
+#
+# Run container (production):
+#   docker run -p 8080:8080 bangla-lms:latest
+#
+# Run with environment variables:
+#   docker run -p 8080:8080 \
+#     -e SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/bangla \
+#     -e JWT_SECRET=your-secret-key \
+#     bangla-lms:latest
+#
+# Run with volume (persistent database):
+#   docker run -p 8080:8080 \
+#     -v /host/data:/data \
+#     bangla-lms:latest
+#
+# Run with custom JVM options:
+#   docker run -p 8080:8080 \
+#     -e JAVA_OPTS="-Xmx1g -Xms512m" \
+#     bangla-lms:latest
+#
+# View logs:
+#   docker logs <container-id>
+#
+# Execute command in running container:
+#   docker exec -it <container-id> sh
+#
+# Push to Docker Hub:
+#   docker tag bangla-lms:latest your-user/bangla-lms:latest
+#   docker push your-user/bangla-lms:latest
+#
+# ============================================
+# IMAGE SIZES (APPROXIMATE)
+# ============================================
+#
+# Stage 1 (frontend-builder):      ~600MB
+#   node:20.12-alpine              ~170MB
+#   + node_modules                 ~400MB
+#   + React build                  ~20MB
+#
+# Stage 2 (backend-builder):       ~1.5GB
+#   eclipse-temurin:17.0.11-jdk    ~470MB
+#   + Maven                        ~180MB
+#   + Maven cache                  ~700MB
+#   + Frontend assets              ~20MB
+#   + Spring Boot JAR              ~150MB
+#
+# Stage 3 (runtime - FINAL):       ~300MB
+#   eclipse-temurin:17.0.11-jre    ~150MB
+#   + Spring Boot JAR              ~150MB
+#   (No Node.js, Maven, or source code!)
+#
+# ============================================
+# TROUBLESHOOTING
+# ============================================
+#
+# Build fails at React stage:
+#   - Check frontend/package.json exists
+#   - Verify npm run build command in package.json
+#   - Check Node.js version compatibility
+#
+# Build fails at Maven stage:
+#   - Check backend/pom.xml exists
+#   - Verify Java version (must be 17+)
+#   - Check Maven dependencies (network required)
+#   - Ensure Spring Boot plugin is in pom.xml
+#
+# Build fails at Frontend copy:
+#   - Verify frontend/dist/ folder is created
+#   - Check React build succeeded (no errors)
+#   - Verify path: COPY --from=frontend-builder /app/frontend/dist ./src/main/resources/static
+#
+# Container won't start:
+#   - Check logs: docker logs <container-id>
+#   - Verify JAR file: docker run --rm -it bangla-lms:latest ls -la app.jar
+#   - Test health endpoint: curl http://localhost:8080/api/courses
+#   - Check port not in use: lsof -i :8080
+#
+# Slow startup:
+#   - Check JAVA_OPTS heap size (-Xmx512m)
+#   - Increase container memory: docker run -m 2g
+#   - Check database connectivity in logs
+#   - Verify no blocking operations in app startup
+#
+# ============================================
