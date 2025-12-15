@@ -1,0 +1,30 @@
+# Don't copy these files/folders into the backend Docker image
+
+# Maven build output (will be built in the container)
+target/
+
+# Maven wrapper (we install Maven in the container)
+.mvn/
+mvnw
+mvnw.cmd
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Documentation
+*.md
+README*
+
+# Git
+.git/
+.gitignore
+
+# Docker files
+Dockerfile
+.dockerignore
