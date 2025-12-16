@@ -7,6 +7,8 @@
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.0-brightgreen.svg)
 ![React](https://img.shields.io/badge/React-18.3.1-blue.svg)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.5.3-blue.svg)
+![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED.svg?logo=docker)
+[![Docker Hub](https://img.shields.io/badge/Docker%20Hub-noor25-2496ED.svg?logo=docker)](https://hub.docker.com/u/noor25)
 
 A comprehensive Learning Management System (LMS) designed to help foreigners learn the Bengali (Bangla) language through structured courses, interactive lessons, and progress tracking.
 
@@ -23,6 +25,7 @@ A comprehensive Learning Management System (LMS) designed to help foreigners lea
 - [Tech Stack](#tech-stack)
 - [Project Structure](#project-structure)
 - [Installation](#installation)
+- [Docker Deployment](#-docker-deployment)
 - [Usage](#usage)
 - [API Documentation](#api-documentation)
 - [Database Schema](#database-schema)
@@ -255,6 +258,496 @@ Access H2 Database Console: `http://localhost:8080/h2-console`
 - JDBC URL: `jdbc:h2:mem:banglalmsdb`
 - Username: `sa`
 - Password: (leave empty)
+
+---
+
+## 🐳 Docker Deployment
+
+### Prerequisites
+
+- **Docker:** Version 20.10 or higher
+- **Docker Compose:** Version 2.0 or higher
+
+Check if Docker is installed:
+```bash
+docker --version
+docker-compose --version
+```
+
+### Quick Start with Docker Compose
+
+The easiest way to run the entire application stack:
+
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/bangla-learning-lms.git
+cd bangla-learning-lms
+
+# Build and start all services
+docker-compose up --build -d
+
+# Check running containers
+docker-compose ps
+
+# View logs
+docker-compose logs -f
+
+# Stop all services
+docker-compose down
+```
+
+**Access the Application:**
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:8080
+- H2 Console: http://localhost:8080/h2-console
+
+### Docker Images
+
+Pre-built Docker images are available on Docker Hub:
+
+#### Backend Image
+```bash
+# Pull from Docker Hub
+docker pull noor25/bangla-lms-backend:latest
+
+# Run the backend container
+docker run -d \
+  --name bangla-backend \
+  -p 8080:8080 \
+  -v $(pwd)/data:/data \
+  -e SPRING_DATASOURCE_URL=jdbc:h2:file:/data/lmsdb \
+  noor25/bangla-lms-backend:latest
+```
+
+#### Frontend Image
+```bash
+# Pull from Docker Hub
+docker pull noor25/bangla-lms-frontend:latest
+
+# Run the frontend container
+docker run -d \
+  --name bangla-frontend \
+  -p 3000:80 \
+  noor25/bangla-lms-frontend:latest
+```
+
+### Building Docker Images Manually
+
+#### Build Backend Image
+```bash
+# Navigate to backend directory
+cd backend
+
+# Build the image
+docker build -t bangla-lms-backend:latest .
+
+# Run the container
+docker run -d -p 8080:8080 --name backend bangla-lms-backend:latest
+```
+
+#### Build Frontend Image
+```bash
+# From project root directory
+docker build -t bangla-lms-frontend:latest .
+
+# Run the container
+docker run -d -p 3000:80 --name frontend bangla-lms-frontend:latest
+```
+
+### Docker Compose Configuration
+
+The `docker-compose.yml` file orchestrates both services:
+
+```yaml
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: bangla-lms-backend
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:h2:file:/data/lmsdb
+    volumes:
+      - ./data:/data
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bangla-lms-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+```
+
+### Docker Commands Reference
+
+#### Container Management
+```bash
+# List all containers
+docker ps -a
+
+# Start stopped containers
+docker start bangla-lms-backend bangla-lms-frontend
+
+# Stop running containers
+docker stop bangla-lms-backend bangla-lms-frontend
+
+# Restart containers
+docker restart bangla-lms-backend bangla-lms-frontend
+
+# Remove containers
+docker rm bangla-lms-backend bangla-lms-frontend
+
+# Remove containers forcefully
+docker rm -f bangla-lms-backend bangla-lms-frontend
+```
+
+#### Image Management
+```bash
+# List all images
+docker images
+
+# Remove an image
+docker rmi bangla-lms-backend:latest
+
+# Remove all unused images
+docker image prune -a
+
+# View image details
+docker inspect bangla-lms-backend:latest
+```
+
+#### Logs and Debugging
+```bash
+# View container logs
+docker logs bangla-lms-backend
+docker logs bangla-lms-frontend
+
+# Follow logs in real-time
+docker logs -f bangla-lms-backend
+
+# View last 100 lines of logs
+docker logs --tail 100 bangla-lms-backend
+
+# Execute commands inside container
+docker exec -it bangla-lms-backend bash
+docker exec -it bangla-lms-frontend sh
+
+# Check container resource usage
+docker stats
+```
+
+#### Docker Compose Commands
+```bash
+# Build images without starting containers
+docker-compose build
+
+# Start services in background
+docker-compose up -d
+
+# Start services with rebuild
+docker-compose up --build
+
+# Stop services (keeps containers)
+docker-compose stop
+
+# Stop and remove containers, networks, volumes
+docker-compose down
+
+# Stop and remove everything including volumes
+docker-compose down -v
+
+# View service status
+docker-compose ps
+
+# View logs for all services
+docker-compose logs
+
+# View logs for specific service
+docker-compose logs backend
+docker-compose logs frontend
+
+# Scale services (if needed)
+docker-compose up -d --scale backend=2
+
+# Restart specific service
+docker-compose restart backend
+```
+
+### Pushing Images to Docker Hub
+
+#### 1. Login to Docker Hub
+```bash
+docker login
+# Enter your Docker Hub username and password
+```
+
+#### 2. Tag Your Images
+```bash
+# Tag backend image
+docker tag bangla-lms-backend:latest YOUR_USERNAME/bangla-lms-backend:latest
+
+# Tag frontend image
+docker tag bangla-lms-frontend:latest YOUR_USERNAME/bangla-lms-frontend:latest
+
+# Tag with version number
+docker tag bangla-lms-backend:latest YOUR_USERNAME/bangla-lms-backend:v1.0.0
+```
+
+#### 3. Push Images to Docker Hub
+```bash
+# Push backend image
+docker push YOUR_USERNAME/bangla-lms-backend:latest
+
+# Push frontend image
+docker push YOUR_USERNAME/bangla-lms-frontend:latest
+
+# Push specific version
+docker push YOUR_USERNAME/bangla-lms-backend:v1.0.0
+```
+
+#### 4. Pull and Use Your Images
+```bash
+# Pull your images from Docker Hub
+docker pull YOUR_USERNAME/bangla-lms-backend:latest
+docker pull YOUR_USERNAME/bangla-lms-frontend:latest
+
+# Run containers from Docker Hub images
+docker run -d -p 8080:8080 YOUR_USERNAME/bangla-lms-backend:latest
+docker run -d -p 3000:80 YOUR_USERNAME/bangla-lms-frontend:latest
+```
+
+### Production Docker Deployment
+
+#### Using Docker Hub Images
+
+Create a `docker-compose.prod.yml` file:
+
+```yaml
+services:
+  backend:
+    image: noor25/bangla-lms-backend:latest
+    container_name: bangla-lms-backend-prod
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/banglalms
+      - SPRING_DATASOURCE_USERNAME=${DB_USER}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
+    restart: always
+    networks:
+      - app-network
+
+  frontend:
+    image: noor25/bangla-lms-frontend:latest
+    container_name: bangla-lms-frontend-prod
+    ports:
+      - "80:80"
+      - "443:443"
+    restart: always
+    networks:
+      - app-network
+    depends_on:
+      - backend
+
+networks:
+  app-network:
+    driver: bridge
+```
+
+Run in production:
+```bash
+docker-compose -f docker-compose.prod.yml up -d
+```
+
+### Environment Variables
+
+#### Backend Environment Variables
+```bash
+# Database Configuration
+SPRING_DATASOURCE_URL=jdbc:h2:file:/data/lmsdb
+SPRING_DATASOURCE_USERNAME=sa
+SPRING_DATASOURCE_PASSWORD=
+
+# Server Configuration
+SERVER_PORT=8080
+
+# H2 Console
+SPRING_H2_CONSOLE_ENABLED=true
+SPRING_H2_CONSOLE_PATH=/h2-console
+
+# JPA Configuration
+SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.H2Dialect
+```
+
+#### Frontend Environment Variables
+```bash
+# API Base URL (if using environment-specific configs)
+VITE_API_BASE_URL=http://localhost:8080/api
+```
+
+### Docker Volumes
+
+Persist data across container restarts:
+
+```bash
+# Create named volume
+docker volume create bangla-lms-data
+
+# Run backend with named volume
+docker run -d \
+  --name bangla-backend \
+  -p 8080:8080 \
+  -v bangla-lms-data:/data \
+  noor25/bangla-lms-backend:latest
+
+# List volumes
+docker volume ls
+
+# Inspect volume
+docker volume inspect bangla-lms-data
+
+# Remove volume
+docker volume rm bangla-lms-data
+```
+
+### Docker Networks
+
+Create custom networks for container communication:
+
+```bash
+# Create custom network
+docker network create bangla-lms-network
+
+# Run containers on custom network
+docker run -d \
+  --name bangla-backend \
+  --network bangla-lms-network \
+  -p 8080:8080 \
+  noor25/bangla-lms-backend:latest
+
+docker run -d \
+  --name bangla-frontend \
+  --network bangla-lms-network \
+  -p 3000:80 \
+  noor25/bangla-lms-frontend:latest
+
+# List networks
+docker network ls
+
+# Inspect network
+docker network inspect bangla-lms-network
+
+# Remove network
+docker network rm bangla-lms-network
+```
+
+### Troubleshooting
+
+#### Common Issues
+
+**1. Port Already in Use**
+```bash
+# Find process using port 8080
+lsof -i :8080
+
+# Kill the process or use different port
+docker run -d -p 9090:8080 noor25/bangla-lms-backend:latest
+```
+
+**2. Container Keeps Restarting**
+```bash
+# Check container logs
+docker logs bangla-lms-backend
+
+# Check container status
+docker inspect bangla-lms-backend
+```
+
+**3. Cannot Connect to Backend from Frontend**
+```bash
+# Ensure containers are on same network
+docker network inspect bridge
+
+# Use container name or IP for communication
+# Update frontend API URL to: http://bangla-lms-backend:8080/api
+```
+
+**4. Build Failures**
+```bash
+# Clean up and rebuild
+docker-compose down -v
+docker system prune -a
+docker-compose up --build
+```
+
+**5. Out of Disk Space**
+```bash
+# Remove unused containers, images, networks
+docker system prune -a
+
+# Remove specific images
+docker image prune -a
+
+# Check disk usage
+docker system df
+```
+
+### Docker Health Checks
+
+Monitor container health:
+
+```bash
+# Check health status
+docker ps --filter "health=healthy"
+
+# View health check logs
+docker inspect --format='{{json .State.Health}}' bangla-lms-backend | jq
+```
+
+### Performance Optimization
+
+#### Resource Limits
+```bash
+# Run container with memory limit
+docker run -d \
+  --name bangla-backend \
+  --memory="512m" \
+  --cpus="1.0" \
+  -p 8080:8080 \
+  noor25/bangla-lms-backend:latest
+```
+
+#### Multi-stage Builds
+Both Dockerfiles use multi-stage builds to reduce image size:
+- Backend: 503MB (Maven build + JRE runtime)
+- Frontend: 76.4MB (Node build + Nginx)
+
+### Docker Hub Repository
+
+Official Docker Hub repositories:
+- **Backend:** [noor25/bangla-lms-backend](https://hub.docker.com/r/noor25/bangla-lms-backend)
+- **Frontend:** [noor25/bangla-lms-frontend](https://hub.docker.com/r/noor25/bangla-lms-frontend)
+
+#### Repository Commands
+```bash
+# Search for images
+docker search noor25/bangla-lms
+
+# Pull specific version
+docker pull noor25/bangla-lms-backend:v1.0.0
+
+# View image layers
+docker history noor25/bangla-lms-backend:latest
+```
 
 ---
 

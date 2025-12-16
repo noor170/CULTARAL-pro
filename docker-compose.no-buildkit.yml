@@ -1,9 +1,14 @@
+# Docker Compose with BuildKit disabled
+# Use this if you experience timeout issues with the regular docker-compose.yml
+
+# To use this file, run:
+# docker-compose -f docker-compose.no-buildkit.yml up --build
 
 # ============================================
 # DOCKER COMPOSE CONFIGURATION
 # ============================================
 # This file orchestrates the Backend and Frontend services
-# Run with: docker-compose up --build
+# with BuildKit disabled for better compatibility
 
 services:
   # ============================================
@@ -28,31 +33,17 @@ services:
       # Use file-based H2 database for data persistence
       - SPRING_DATASOURCE_URL=jdbc:h2:file:/data/lmsdb
       - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.h2.Driver
-      - SPRING_DATASOURCE_USERNAME=sa
-      - SPRING_DATASOURCE_PASSWORD=
-      - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.H2Dialect
-
-      # H2 Console configuration (useful for debugging)
       - SPRING_H2_CONSOLE_ENABLED=true
-      - SPRING_H2_CONSOLE_PATH=/h2-console
+      - JWT_SECRET=BanglaLearningLMS2024SecretKeyForJWTAuthenticationMinimum256BitsRequired
+      - JWT_EXPIRATION=86400000
 
-      # Liquibase configuration
-      - SPRING_LIQUIBASE_ENABLED=true
-
-      # Server configuration
-      - SERVER_PORT=8080
-
-    # Mount a local directory to persist the H2 database file
-    # The database will survive container restarts
+    # Volume for data persistence (H2 database file)
     volumes:
       - ./data:/data
 
-    # Restart policy: always restart if the container stops
-    restart: unless-stopped
-
-    # Health check to ensure the backend is ready
+    # Wait for backend to be healthy before starting dependent services
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/api/courses"]
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/api/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -75,18 +66,19 @@ services:
     ports:
       - "3000:80"
 
-    # Wait for the backend to be ready before starting
+    # Wait for backend before starting frontend
     depends_on:
       backend:
         condition: service_healthy
 
-    # Restart policy: always restart if the container stops
-    restart: unless-stopped
+    # Environment variables for frontend build
+    environment:
+      - VITE_BACKEND_URL=http://localhost:8080
 
 # ============================================
 # VOLUMES
 # ============================================
-# Named volumes can be defined here (we're using bind mounts instead)
 volumes:
+  # Volume for data persistence
   data:
     driver: local

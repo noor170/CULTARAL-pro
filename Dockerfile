@@ -2,7 +2,7 @@
 # STAGE 1: BUILD THE REACT APPLICATION
 # ============================================
 # Use Node.js Alpine (lightweight Linux) for building
-FROM node:20-alpine AS builder
+FROM node:20.12-alpine AS builder
 
 # Set the working directory inside the container
 WORKDIR /app
@@ -26,7 +26,7 @@ RUN npm run build
 # STAGE 2: SERVE WITH NGINX
 # ============================================
 # Use Nginx Alpine for serving static files
-FROM nginx:alpine
+FROM nginx:1.27-alpine
 
 # Copy the built React app from the builder stage
 # to Nginx's default public directory

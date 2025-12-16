@@ -2,7 +2,7 @@
 # STAGE 1: BUILD THE APPLICATION
 # ============================================
 # Use Maven with Java 17 to build the application
-FROM eclipse-temurin:17-jdk-alpine AS builder
+FROM maven:3.9-eclipse-temurin-17 AS builder
 
 # Set the working directory inside the container
 WORKDIR /app
@@ -14,9 +14,6 @@ COPY pom.xml .
 # Copy the entire source code
 COPY src ./src
 
-# Install Maven (Alpine package manager)
-RUN apk add --no-cache maven
-
 # Build the application and create a JAR file
 # -DskipTests: Skip running tests to speed up the build
 # The JAR file will be created in /app/target/
@@ -26,7 +23,7 @@ RUN mvn clean package -DskipTests
 # STAGE 2: CREATE THE RUNTIME IMAGE
 # ============================================
 # Use a smaller JRE image for running the application
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:17-jre
 
 # Set the working directory
 WORKDIR /app
