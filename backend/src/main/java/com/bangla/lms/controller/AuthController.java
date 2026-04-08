@@ -3,11 +3,14 @@ package com.bangla.lms.controller;
 import com.bangla.lms.dto.AuthResponse;
 import com.bangla.lms.dto.LoginRequest;
 import com.bangla.lms.dto.RegisterRequest;
+import com.bangla.lms.dto.UserProfileResponse;
 import com.bangla.lms.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,6 +29,12 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
         AuthResponse response = userService.login(request);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<UserProfileResponse> me(@AuthenticationPrincipal UserDetails userDetails) {
+        UserProfileResponse response = userService.getCurrentUser(userDetails.getUsername());
         return ResponseEntity.ok(response);
     }
 }

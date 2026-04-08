@@ -68,6 +68,10 @@ public class JwtUtil {
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
+    public long getExpirationInMillis() {
+        return properties.getExpiration();
+    }
+
     private Key getSigningKey() {
         String secret = properties.getSecret();
         byte[] keyBytes = secret == null ? new byte[0] : secret.getBytes(StandardCharsets.UTF_8);

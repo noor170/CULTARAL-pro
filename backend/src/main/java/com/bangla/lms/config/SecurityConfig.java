@@ -27,6 +27,7 @@ public class SecurityConfig {
     private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
+    private final RestAuthenticationEntryPoint restAuthenticationEntryPoint;
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
@@ -41,12 +42,13 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**", "/h2-console/**", "/api/courses/**", "/api/lessons/**").permitAll()
+                        .requestMatchers("/api/auth/register", "/api/auth/login", "/h2-console/**", "/api/courses/**", "/api/lessons/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
+                .exceptionHandling(ex -> ex.authenticationEntryPoint(restAuthenticationEntryPoint))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 

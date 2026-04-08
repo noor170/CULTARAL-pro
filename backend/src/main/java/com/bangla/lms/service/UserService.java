@@ -3,6 +3,7 @@ package com.bangla.lms.service;
 import com.bangla.lms.dto.AuthResponse;
 import com.bangla.lms.dto.LoginRequest;
 import com.bangla.lms.dto.RegisterRequest;
+import com.bangla.lms.dto.UserProfileResponse;
 import com.bangla.lms.entity.User;
 import com.bangla.lms.exception.InvalidCredentialsException;
 import com.bangla.lms.exception.UserAlreadyExistsException;
@@ -61,15 +62,7 @@ public class UserService implements UserDetailsService {
 
         user = userRepository.save(user);
 
-        String token = jwtUtil.generateToken(user);
-
-        return AuthResponse.builder()
-                .token(token)
-                .email(user.getEmail())
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .role(user.getRole().name())
-                .build();
+        return buildAuthResponse(user);
     }
 
     public AuthResponse login(LoginRequest request) {
@@ -87,10 +80,31 @@ public class UserService implements UserDetailsService {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new InvalidCredentialsException("Invalid email or password"));
 
+        return buildAuthResponse(user);
+    }
+
+    public UserProfileResponse getCurrentUser(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+
+        return UserProfileResponse.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .phone(user.getPhone())
+                .gender(user.getGender())
+                .role(user.getRole().name())
+                .build();
+    }
+
+    private AuthResponse buildAuthResponse(User user) {
         String token = jwtUtil.generateToken(user);
 
         return AuthResponse.builder()
                 .token(token)
+                .tokenType("Bearer")
+                .expiresIn(jwtUtil.getExpirationInMillis())
                 .email(user.getEmail())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
