@@ -3,6 +3,7 @@ package com.bangla.lms.config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -42,11 +43,15 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/register", "/api/auth/login", "/h2-console/**", "/api/courses/**", "/api/lessons/**").permitAll()
+                        .requestMatchers("/api/auth/login").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/auth/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/auth/student/**").hasRole("STUDENT")
                         .requestMatchers("/api/auth/teacher/**").hasRole("TEACHER")
+                        .requestMatchers(HttpMethod.GET, "/api/courses/**", "/api/lessons/**").hasAnyRole("ADMIN", "TEACHER", "STUDENT")
+                        .requestMatchers(HttpMethod.POST, "/api/courses/**", "/api/lessons/**").hasAnyRole("ADMIN", "TEACHER")
+                        .requestMatchers(HttpMethod.PUT, "/api/courses/**", "/api/lessons/**").hasAnyRole("ADMIN", "TEACHER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/courses/**", "/api/lessons/**").hasAnyRole("ADMIN", "TEACHER")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

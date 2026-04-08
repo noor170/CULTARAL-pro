@@ -4,48 +4,6 @@ databaseChangeLog:
       author: bangla-lms
       changes:
         - insert:
-            tableName: users
-            columns:
-              - column: {name: first_name, value: "Admin"}
-              - column: {name: last_name, value: "User"}
-              - column: {name: email, value: "admin@gmail.com"}
-              - column: {name: password, value: "$2a$10$WpNYr2OEeBeTIo5d5RGfCe/tATA6eeHmh6GVdh5XyxzWB4OJ2eIHC"}
-              - column: {name: phone, value: "+8801234567890"}
-              - column: {name: gender, value: "male"}
-              - column: {name: role, value: "ADMIN"}
-              - column: {name: active, valueBoolean: true}
-              - column: {name: created_at, valueDate: "2024-01-01T00:00:00"}
-              - column: {name: updated_at, valueDate: "2024-01-01T00:00:00"}
-
-        - insert:
-            tableName: users
-            columns:
-              - column: {name: first_name, value: "Student"}
-              - column: {name: last_name, value: "Demo"}
-              - column: {name: email, value: "student@banglalms.com"}
-              - column: {name: password, value: "$2a$10$WpNYr2OEeBeTIo5d5RGfCe/tATA6eeHmh6GVdh5XyxzWB4OJ2eIHC"}
-              - column: {name: phone, value: "+8801987654321"}
-              - column: {name: gender, value: "female"}
-              - column: {name: role, value: "STUDENT"}
-              - column: {name: active, valueBoolean: true}
-              - column: {name: created_at, valueDate: "2024-01-01T00:00:00"}
-              - column: {name: updated_at, valueDate: "2024-01-01T00:00:00"}
-
-        - insert:
-            tableName: users
-            columns:
-              - column: {name: first_name, value: "Teacher"}
-              - column: {name: last_name, value: "Demo"}
-              - column: {name: email, value: "teacher@banglalms.com"}
-              - column: {name: password, value: "$2a$10$WpNYr2OEeBeTIo5d5RGfCe/tATA6eeHmh6GVdh5XyxzWB4OJ2eIHC"}
-              - column: {name: phone, value: "+8801777777777"}
-              - column: {name: gender, value: "male"}
-              - column: {name: role, value: "TEACHER"}
-              - column: {name: active, valueBoolean: true}
-              - column: {name: created_at, valueDate: "2024-01-01T00:00:00"}
-              - column: {name: updated_at, valueDate: "2024-01-01T00:00:00"}
-
-        - insert:
             tableName: courses
             columns:
               - column: {name: title, value: "বাংলা বর্ণমালা - Bangla Alphabet"}
