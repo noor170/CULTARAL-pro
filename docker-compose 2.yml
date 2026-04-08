@@ -1,0 +1,93 @@
+version: '3.8'
+
+# ============================================
+# DOCKER COMPOSE CONFIGURATION
+# ============================================
+# This file orchestrates the Backend and Frontend services
+# Run with: docker-compose up --build
+
+services:
+  # ============================================
+  # BACKEND SERVICE (Spring Boot + H2 Database)
+  # ============================================
+  backend:
+    # Build the backend using the Dockerfile in ./backend directory
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+
+    # Container name for easy identification
+    container_name: bangla-lms-backend
+
+    # Map port 8080 on the host to port 8080 in the container
+    # Access the backend at: http://localhost:8080
+    ports:
+      - "8080:8080"
+
+    # Environment variables for Spring Boot
+    environment:
+      # Use file-based H2 database for data persistence
+      - SPRING_DATASOURCE_URL=jdbc:h2:file:/data/lmsdb
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.h2.Driver
+      - SPRING_DATASOURCE_USERNAME=sa
+      - SPRING_DATASOURCE_PASSWORD=
+      - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.H2Dialect
+
+      # H2 Console configuration (useful for debugging)
+      - SPRING_H2_CONSOLE_ENABLED=true
+      - SPRING_H2_CONSOLE_PATH=/h2-console
+
+      # Liquibase configuration
+      - SPRING_LIQUIBASE_ENABLED=true
+
+      # Server configuration
+      - SERVER_PORT=8080
+
+    # Mount a local directory to persist the H2 database file
+    # The database will survive container restarts
+    volumes:
+      - ./data:/data
+
+    # Restart policy: always restart if the container stops
+    restart: unless-stopped
+
+    # Health check to ensure the backend is ready
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/api/courses"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # ============================================
+  # FRONTEND SERVICE (React + Nginx)
+  # ============================================
+  frontend:
+    # Build the frontend using the Dockerfile in the root directory
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    # Container name for easy identification
+    container_name: bangla-lms-frontend
+
+    # Map port 3000 on the host to port 80 in the container
+    # Access the frontend at: http://localhost:3000
+    ports:
+      - "3000:80"
+
+    # Wait for the backend to be ready before starting
+    depends_on:
+      backend:
+        condition: service_healthy
+
+    # Restart policy: always restart if the container stops
+    restart: unless-stopped
+
+# ============================================
+# VOLUMES
+# ============================================
+# Named volumes can be defined here (we're using bind mounts instead)
+volumes:
+  data:
+    driver: local
