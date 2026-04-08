@@ -13,7 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -73,7 +75,11 @@ public class UserService implements UserDetailsService {
                             request.getPassword()
                     )
             );
+        } catch (DisabledException e) {
+            throw new InvalidCredentialsException("User account is deactivated");
         } catch (BadCredentialsException e) {
+            throw new InvalidCredentialsException("Invalid email or password");
+        } catch (AuthenticationException e) {
             throw new InvalidCredentialsException("Invalid email or password");
         }
 

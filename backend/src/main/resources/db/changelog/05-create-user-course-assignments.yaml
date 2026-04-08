@@ -1,0 +1,46 @@
+databaseChangeLog:
+  - changeSet:
+      id: 5
+      author: bangla-lms
+      changes:
+        - createTable:
+            tableName: user_course_assignments
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: course_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: assigned_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: user_course_assignments
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_assignment_user
+        - addForeignKeyConstraint:
+            baseTableName: user_course_assignments
+            baseColumnNames: course_id
+            referencedTableName: courses
+            referencedColumnNames: id
+            constraintName: fk_assignment_course
+        - addUniqueConstraint:
+            tableName: user_course_assignments
+            columnNames: user_id, course_id
+            constraintName: uk_user_course_assignment

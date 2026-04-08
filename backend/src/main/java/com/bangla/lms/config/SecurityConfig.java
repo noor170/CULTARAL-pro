@@ -43,6 +43,10 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/register", "/api/auth/login", "/h2-console/**", "/api/courses/**", "/api/lessons/**").permitAll()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/auth/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/auth/student/**").hasRole("STUDENT")
+                        .requestMatchers("/api/auth/teacher/**").hasRole("TEACHER")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

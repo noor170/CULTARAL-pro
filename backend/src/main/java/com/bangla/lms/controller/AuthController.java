@@ -13,6 +13,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -36,5 +38,20 @@ public class AuthController {
     public ResponseEntity<UserProfileResponse> me(@AuthenticationPrincipal UserDetails userDetails) {
         UserProfileResponse response = userService.getCurrentUser(userDetails.getUsername());
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/admin/dashboard")
+    public ResponseEntity<Map<String, String>> adminDashboard() {
+        return ResponseEntity.ok(Map.of("message", "Admin access granted"));
+    }
+
+    @GetMapping("/student/dashboard")
+    public ResponseEntity<Map<String, String>> studentDashboard() {
+        return ResponseEntity.ok(Map.of("message", "Student access granted"));
+    }
+
+    @GetMapping("/teacher/dashboard")
+    public ResponseEntity<Map<String, String>> teacherDashboard() {
+        return ResponseEntity.ok(Map.of("message", "Teacher access granted"));
     }
 }

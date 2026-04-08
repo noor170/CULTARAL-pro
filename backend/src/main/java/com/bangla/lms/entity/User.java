@@ -47,6 +47,10 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private Role role;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean active = true;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -91,12 +95,12 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return active;
     }
 
     public enum Role {
         ADMIN,
         STUDENT,
-        INSTRUCTOR
+        TEACHER
     }
 }
